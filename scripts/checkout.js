@@ -103,5 +103,19 @@ document.querySelectorAll('.js-delete-link').forEach((link) => {
 
     const container = document.querySelector(`.js-cart-item-container-${productId}`);
     container.remove();
+    updateCartQuantity();
   })
 });
+
+function updateCartQuantity() {
+  let cartQuantity = 0;
+
+  cart.forEach((cartItem) => {
+    cartQuantity += cartItem.quantity;
+  });
+
+  document.querySelector('.js-return').innerHTML = `${cartQuantity} items`
+
+};
+
+updateCartQuantity();
