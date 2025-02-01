@@ -1,11 +1,12 @@
 import {cart, removeFromCart, calculateCartQuantity, updateQuantity, updateDeliveryOption} from '../../data/cart.js';
 import {products, getProduct} from '../../data/products.js';
 import {formatCurrency} from './utils/money.js';
-import {hello} from 'https://unpkg.com/supersimpledev@1.0.1/hello.esm.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
-import {deliveryOptions, getDeliveryOption} from '../../data/deliveryOptions.js';
+import {deliveryOptions, getDeliveryOption, calculateDeliveryDate} from '../../data/deliveryOptions.js';
 import { renderPaymentSummary } from './checkout/paymentSummary.js';
+import { renderCheckoutHeader } from './checkout/checkoutHeader.js';
 
+renderCheckoutHeader();
 renderPaymentSummary();
 
 export function renderOrderSummary() {
@@ -21,14 +22,7 @@ export function renderOrderSummary() {
 
       const deliveryOption = getDeliveryOption(deliveryOptionId);
 
-      const today = dayjs();
-      const deliveryDate = today.add(
-        deliveryOption.deliveryDays,
-        'days'
-      );
-      const dateString = deliveryDate.format(
-        'dddd, MMMM D'
-      );
+      const dateString = calculateDeliveryDate(deliveryOption);
 
       cartSummaryHTML += 
       `<div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
@@ -77,14 +71,8 @@ export function renderOrderSummary() {
     let html = '';
 
     deliveryOptions.forEach((deliveryOption) => {
-      const today = dayjs();
-      const deliveryDate = today.add(
-        deliveryOption.deliveryDays,
-        'days'
-      );
-      const dateString = deliveryDate.format(
-        'dddd, MMMM D'
-      );
+      
+      const dateString = calculateDeliveryDate(deliveryOption);
 
       const priceString = deliveryOption.priceCents === 0
         ? 'FREE'
@@ -112,7 +100,7 @@ export function renderOrderSummary() {
       `
     });
 
-    return html
+    return html;
   }
 
   document.querySelector('.js-order-summary').innerHTML = cartSummaryHTML;
@@ -122,9 +110,9 @@ export function renderOrderSummary() {
       const productId = link.dataset.productId;
       removeFromCart(productId);
 
-      const container = document.querySelector(`.js-cart-item-container-${productId}`);
-      container.remove();
-
+      // const container = document.querySelector(`.js-cart-item-container-${productId}`);
+      // container.remove();
+      renderOrderSummary();
       updateCartQuantity();
       renderPaymentSummary();
     })
@@ -138,18 +126,22 @@ export function renderOrderSummary() {
 
   updateCartQuantity();
 
+
   document.querySelectorAll('.js-update-quantity').forEach((link) => {
     link.addEventListener('click', () => {
       const productId = link.dataset.productId;
 
       const container = document.querySelector(`.js-cart-item-container-${productId}`);
-      container.classList.add('.is-editing-quantity');
+      container.classList.add('is-editing-quantity');
     });
   });
 
   document.querySelectorAll('.js-save-link').forEach((link) => {
     link.addEventListener('click', () => {
       const productId = link.dataset.productId;
+
+      const container = document.querySelector(`.js-cart-item-container-${productId}`);
+      container.classList.remove('is-editing-quantity');
 
       const quantityInput = document.querySelector(`.js-quantity-input-${productId}`);
 
@@ -159,16 +151,15 @@ export function renderOrderSummary() {
         alert('Quantity must be at least 0 and less than 1000');
         return;
       }
-
       updateQuantity(productId, newQuantity);
 
-      const container = document.querySelector(`.js-cart-item-container-${productId}`);
-      container.classList.remove('.is-editing-quantity');
-
-      const quantityLabel = document.querySelector(`.js-quantity-label-${productId}`);
-      quantityLabel.innerHTML = newQuantity;
-
-      updateCartQuantity();
+      renderCheckoutHeader();
+      renderOrderSummary();
+      renderPaymentSummary();
+      
+      //const quantityLabel = document.querySelector(`.js-quantity-label-${productId}`);
+      //quantityLabel.innerHTML = newQuantity;
+      //updateCartQuantity();
     });
   });
 

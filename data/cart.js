@@ -88,6 +88,7 @@ export function addToCart(productId) {
         matchingItem = cartItem;
       }
     });
+    
     matchingItem.quantity = newQuantity;
 
     saveToStorage();
