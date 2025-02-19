@@ -5,7 +5,7 @@ import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 import {deliveryOptions, getDeliveryOption, calculateDeliveryDate} from '../../data/deliveryOptions.js';
 import { renderPaymentSummary } from './checkout/paymentSummary.js';
 import { renderCheckoutHeader } from './checkout/checkoutHeader.js';
-import '../data/cart-class.js';
+//import '../data/cart-class.js';
 
 renderCheckoutHeader();
 renderPaymentSummary();
@@ -42,7 +42,7 @@ export function renderOrderSummary() {
                     ${matchingProduct.name}
                   </div>
                   <div class="product-price">
-                    $${formatCurrency(matchingProduct.priceCents)}
+                    ${matchingProduct.getPrice()}
                   </div>
                   <div class="product-quantity 
                   js-product-quantity-${matchingProduct.id}">
