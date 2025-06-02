@@ -1,5 +1,5 @@
 class Cart{
-    cartItems; //shortcut per: cartItems = undefined; 
+    cartItems;
     #localStorageKey;
 
     constructor(localStorageKey) {
